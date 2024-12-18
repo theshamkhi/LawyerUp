@@ -10,61 +10,49 @@
 </head>
 <body>
 
-
-<nav class="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="../assets/media/court.png" class="h-8" alt="Logo">
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">LawyerUp</span>
-    </a>
-    <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started</button>
-        <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-sticky" aria-expanded="false">
-            <span class="sr-only">Open main menu</span>
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
-            </svg>
-        </button>
-    </div>
-    <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-        <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-        <li>
-            <a href="#" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
-        </li>
-        <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
-        </li>
-        <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Services</a>
-        </li>
-        <li>
-            <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
-        </li>
-        </ul>
-    </div>
-  </div>
-</nav>
-
-
 <?php
-    include('../config/db.php');
+include('../config/db.php');
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $name = $_POST['name'];
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $role = $_POST['role'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $sql = "INSERT INTO User (Name, Username, Email, Password, Role) 
-                VALUES ('$name', '$username', '$email', '$password', '$role')";
+    // Common user inputs
+    $name = $conn->real_escape_string($_POST['name']);
+    $username = $conn->real_escape_string($_POST['username']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $role = $conn->real_escape_string($_POST['role']);
 
-        if ($conn->query($sql) === TRUE) {
-            header("Location: login.php");
+    // Insert user into the User table
+    $sql = "INSERT INTO User (Name, Username, Email, Password, Role) VALUES ('$name', '$username', '$email', '$password', '$role')";
+
+    if ($conn->query($sql) === TRUE) {
+        $lastUserID = $conn->insert_id;
+
+        if ($role === 'Lawyer') {
+            // Lawyer-specific inputs
+            $specialization = $conn->real_escape_string($_POST['specialization']);
+            $photoURL = $conn->real_escape_string($_POST['photoURL']);
+            $rating = (float)$_POST['rating'];
+            $experience = (int)$_POST['experience'];
+            $bio = $conn->real_escape_string($_POST['bio']);
+            $phoneNumber = $conn->real_escape_string($_POST['phoneNumber']);
+
+            // Insert into Lawyer table
+            $lawyerSql = "INSERT INTO Lawyer (LawyerID, Specialization, PhotoURL, Rating, ExpYears, Bio, PhoneNumber) 
+                          VALUES ('$lastUserID', '$specialization', '$photoURL', '$rating', '$experience', '$bio', '$phoneNumber')";
+
+            if ($conn->query($lawyerSql) === TRUE) {
+                header("Location: login.php");
+            } else {
+                echo "Error inserting into Lawyer table: " . $conn->error;
+            }
         } else {
-            echo "Error: " . $conn->error;
+            header("Location: login.php");
         }
+    } else {
+        echo "Error inserting into User table: " . $conn->error;
     }
+}
 ?>
 
 <div class="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-14 mr-auto mb-0 ml-auto max-w-7xl xl:px-5 lg:flex-row">
@@ -77,59 +65,92 @@
             </div>
         </div>
         <div class="w-full mt-20 mr-0 mb-0 ml-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
-            <div class="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl
-                relative z-10">
+            <div class="flex flex-col items-start justify-start pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
 
                 <form method="POST" class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+                    <!-- Name -->
                     <div class="relative">
-                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                            absolute">Name</p>
-                        <input type="text" name="name" placeholder="Saul Goodman" required class="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"/>
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Name</p>
+                        <input type="text" name="name" placeholder="Saul Goodman" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
+
+                    <!-- Username -->
                     <div class="relative">
-                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                            absolute">Username</p>
-                        <input type="text" name="username" placeholder="Saul123" required class="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"/>
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Username</p>
+                        <input type="text" name="username" placeholder="Saul123" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
+
+                    <!-- Email -->
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Email</p>
-                        <input type="email" name="email" placeholder="Saul123@gmail.com" required class="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"/>
+                        <input type="email" name="email" placeholder="Saul123@gmail.com" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
+
+                    <!-- Role -->
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Role</p>
-                        <select name="role" class="border focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md">
+                        <select name="role" id="role" class="border focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md">
                             <option value="Client" class="text-gray-400">Client</option>
                             <option value="Lawyer" class="text-gray-400">Lawyer</option>
                         </select>
                     </div>
-                    <div class="relative">
-                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                            absolute">Password</p>
-                        <input type="password" name="password" placeholder="•••••••" required class="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"/>
-                    </div>
-                    <div class="relative">
-                        <button type="submit" class="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
-                            rounded-lg transition duration-200 hover:bg-indigo-600 ease">Register</button>
-                    </div>
-                    <div class="relative">
-                        <p class="text-center font-medium text-gray-600">Already have an account, <a href="login.php">Login</a></p>
-                    </div>
-                </form>
 
+                    <!-- Lawyer-Specific Fields -->
+                    <div id="lawyerFields" class="hidden w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Specialization</p>
+                            <input type="text" name="specialization" placeholder="e.g., Criminal Law" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Photo URL</p>
+                            <input type="url" name="photoURL" placeholder="e.g., https://example.com/photo.jpg" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Rating (1-5)</p>
+                            <input type="number" name="rating" min="1" max="5" step="0.1" placeholder="e.g., 4.5" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Experience (Years)</p>
+                            <input type="number" name="experience" placeholder="e.g., 5" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        </div>
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Bio</p>
+                            <textarea name="bio" placeholder="Brief bio" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div class="relative">
+                            <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Phone Number</p>
+                            <input type="tel" name="phoneNumber" placeholder="e.g., 555-123-4567" class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Password</p>
+                        <input type="password" name="password" placeholder="•••••••" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                    </div>
+
+                    <div class="relative">
+                        <button type="submit" class="text-white font-bold bg-blue-500 hover:bg-blue-700 rounded-full py-3 px-10 w-full">Register</button>
+                    </div>
+
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Show Lawyer-specific fields based on role selection
+    document.getElementById('role').addEventListener('change', function() {
+        const role = this.value;
+        const lawyerFields = document.getElementById('lawyerFields');
+        if (role === 'Lawyer') {
+            lawyerFields.classList.remove('hidden');
+        } else {
+            lawyerFields.classList.add('hidden');
+        }
+    });
+</script>
 
 </body>
 </html>
