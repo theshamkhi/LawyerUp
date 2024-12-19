@@ -136,17 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script>
-    document.getElementById('role').addEventListener('change', function() {
-        const role = this.value;
-        const lawyerFields = document.getElementById('lawyerFields');
-        if (role === 'Lawyer') {
-            lawyerFields.classList.remove('hidden');
-        } else {
-            lawyerFields.classList.add('hidden');
-        }
-    });
-</script>
+<script src="../assets/script.js"></script>
 
 </body>
 </html>
