@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 
 $lawyer_id = $_SESSION['user_id'];
 
-$sql = "SELECT User.Name, Lawyer.PhotoURL, Lawyer.Specialization, Lawyer.ExpYears, Lawyer.Bio
+$sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
         FROM Lawyer
         JOIN User ON Lawyer.LawyerID = User.UserID
         WHERE Lawyer.LawyerID = $lawyer_id";
@@ -55,11 +55,15 @@ if ($lawyer_result->num_rows > 0) {
       <?php if ($lawyer): ?>
         <div class="flex flex-col">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
-            <div class="px-3 py-4">
+            <div class="px-3 pt-4">
                 <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?></h2>
-                <p class="text-base text-gray-100 mb-4"><?php echo $lawyer['Specialization']?> Specialist</p>
+                <p class="text-base text-gray-400">&#128221;  <?php echo $lawyer['Specialization']?> Specialist</p>
+                <p class="text-base text-gray-400">&#128188;  <?php echo $lawyer['ExpYears']; ?> Years of experience</p>
+                <p class="text-base text-gray-400">&#128231;  <?php echo $lawyer['Email']; ?></p>
+                <p class="text-base text-gray-400">&#128222;  <?php echo $lawyer['PhoneNumber']; ?></p>
+                <p class="text-base text-gray-400">&#127775;  <?php echo $lawyer['Rating']; ?>/5</p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
-                    <p class="text-base text-gray-300">&#10077; <?php echo $lawyer['Bio']; ?> &#10078;</p>
+                    <p class="text-base text-gray-300"><?php echo $lawyer['Bio']; ?></p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
             </div>
         </div>
@@ -71,7 +75,7 @@ if ($lawyer_result->num_rows > 0) {
 
       <ul class="space-y-2 font-medium px-3 py-2">
          <li>
-            <a href="ClientDashboard.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <a href="LawyerDashboard.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
@@ -94,7 +98,8 @@ if ($lawyer_result->num_rows > 0) {
 
 <div class="p-8 sm:ml-80">
     <?php
-        $reservation_sql = "SELECT User.Name AS Name, Reservation.ReservationDate, Reservation.ReservationID
+        // Fetch reservations for the current lawyer
+        $reservation_sql = "SELECT User.Name AS Name, Reservation.ReservationDate, Reservation.ReservationID, Reservation.Status
                             FROM Reservation
                             JOIN User ON Reservation.ClientID = User.UserID
                             WHERE Reservation.LawyerID = $lawyer_id";
@@ -109,6 +114,7 @@ if ($lawyer_result->num_rows > 0) {
                     <tr>
                         <th class="px-6 py-3 text-left text-sm font-medium text-white">Client</th>
                         <th class="px-6 py-3 text-left text-sm font-medium text-white">Reservation Date</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Status</th>
                         <th class="px-6 py-3 text-left text-sm font-medium text-white">Actions</th>
                     </tr>
                 </thead>
@@ -117,8 +123,9 @@ if ($lawyer_result->num_rows > 0) {
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-6 py-4 text-sm"><?php echo $reservation['Name']; ?></td>
                             <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
                             <td class="px-6 py-4">
-                                <form method="POST" action="#" class="flex space-x-2">
+                                <form method="POST" action="" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
                                     <button name="action" value="accept" class="text-xl hover:scale-105">✅</button>
                                     <button name="action" value="reject" class="text-xl hover:scale-105">❌</button>
@@ -133,6 +140,7 @@ if ($lawyer_result->num_rows > 0) {
         <p class="text-gray-700">You have no upcoming reservations.</p>
     <?php endif; ?>
 </div>
+
 
 <!-- Footer -->
 

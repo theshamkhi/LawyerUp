@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$sql = "SELECT User.Name, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio
+$sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
         FROM Lawyer
         JOIN User ON Lawyer.LawyerID = User.UserID";
 
@@ -127,16 +127,21 @@ $result = $conn->query($sql);
         </div>
     <?php endif; ?>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style="align-items: start;">
         <?php while ($lawyer = $result->fetch_assoc()) : ?>
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col h-full">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
                 <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
-                <div class="p-6 flex-1 flex flex-col justify-between">
+                <div class="p-6">
                     <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
-                    <p class="text-2xl font-semibold text-gray-700"><?php echo $lawyer['Specialization']; ?></p>
-                    <p class="text-gray-600 mt-2">Experience: <?php echo $lawyer['ExpYears']; ?> years</p>
-                    <p class="text-gray-600 mt-2"><?php echo $lawyer['Bio']; ?></p>
-                    
+                    <p class="text-xl font-semibold text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
+                    <p class="text-xl font-semibold text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
+                    <p class="text-xl font-semibold text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
+                    <p class="text-xl font-semibold text-gray-700">&#127775; <?php echo $lawyer['Rating']; ?>/5</p>
+                    <p class="text-xl font-semibold text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> years of experience</p>
+                    <hr class="h-1 my-4 bg-gray-50 border-0 rounded dark:bg-gray-800">
+                    <p class="text-xl font-semibold text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
+                    <hr class="h-1 my-4 bg-gray-50 border-0 rounded dark:bg-gray-800">
+
                     <form method="POST" action="" class="mt-4">
                         <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
                         <div class="flex items-center space-x-4">
@@ -148,6 +153,8 @@ $result = $conn->query($sql);
             </div>
         <?php endwhile; ?>
     </div>
+
+
 
 </div>
 
