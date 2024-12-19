@@ -53,7 +53,7 @@ if ($lawyer_result->num_rows > 0) {
    <div class="h-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
     <!-- Sidebar Menu -->
       <?php if ($lawyer): ?>
-        <div class="flex flex-col">
+        <div class="flex flex-col space-y-2">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
             <div class="px-3 pt-4">
                 <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?></h2>
@@ -98,7 +98,28 @@ if ($lawyer_result->num_rows > 0) {
 
 <div class="p-8 sm:ml-80">
     <?php
-        // Fetch reservations for the current lawyer
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
+            $reservation_id = intval($_POST['reservation_id']);
+            $action = $_POST['action'];
+
+            if ($action === 'accept') {
+                $new_status = 'Confirmed';
+            } elseif ($action === 'reject') {
+                $new_status = 'Rejected';
+            }
+
+            $update_sql = "UPDATE Reservation SET Status = ? WHERE ReservationID = ?";
+            $stmt = $conn->prepare($update_sql);
+            $stmt->bind_param('si', $new_status, $reservation_id);
+
+            if ($stmt->execute()) {
+                echo "<p class='text-green-500'>Reservation status updated successfully.</p>";
+            } else {
+                echo "<p class='text-red-500'>Failed to update reservation status.</p>";
+            }
+
+        }
+
         $reservation_sql = "SELECT User.Name AS Name, Reservation.ReservationDate, Reservation.ReservationID, Reservation.Status
                             FROM Reservation
                             JOIN User ON Reservation.ClientID = User.UserID
@@ -121,9 +142,9 @@ if ($lawyer_result->num_rows > 0) {
                 <tbody>
                     <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Name']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Name']); ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['ReservationDate']); ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Status']); ?></td>
                             <td class="px-6 py-4">
                                 <form method="POST" action="" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
@@ -140,6 +161,7 @@ if ($lawyer_result->num_rows > 0) {
         <p class="text-gray-700">You have no upcoming reservations.</p>
     <?php endif; ?>
 </div>
+
 
 
 <!-- Footer -->

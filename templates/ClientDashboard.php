@@ -79,7 +79,7 @@ $result = $conn->query($sql);
         </div>
     </div>
 
-      <ul class="space-y-2 font-medium px-3 py-4">
+      <ul class="space-y-2 font-medium px-3 pb-4">
         <li>
         <?php if ($user): ?>
                 <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -133,14 +133,14 @@ $result = $conn->query($sql);
                 <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
                 <div class="p-6">
                     <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
-                    <p class="text-xl font-semibold text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
-                    <p class="text-xl font-semibold text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
-                    <p class="text-xl font-semibold text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
-                    <p class="text-xl font-semibold text-gray-700">&#127775; <?php echo $lawyer['Rating']; ?>/5</p>
-                    <p class="text-xl font-semibold text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> years of experience</p>
-                    <hr class="h-1 my-4 bg-gray-50 border-0 rounded dark:bg-gray-800">
-                    <p class="text-xl font-semibold text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
-                    <hr class="h-1 my-4 bg-gray-50 border-0 rounded dark:bg-gray-800">
+                    <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
+                    <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
+                    <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
+                    <p class="text-lg text-gray-700">&#127775; <?php echo $lawyer['Rating']; ?>/5</p>
+                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> years of experience</p>
+                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
+                    <p class="text-lg text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
+                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
 
                     <form method="POST" action="" class="mt-4">
                         <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
