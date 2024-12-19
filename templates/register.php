@@ -130,6 +130,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="text-white font-bold bg-blue-500 hover:bg-blue-700 rounded-full py-3 px-10 w-full">Register</button>
                     </div>
 
+                    <div class="relative">
+                        <p class="text-center font-medium text-gray-600">Already have an account, <a href="login.php" class="text-indigo-600 font-bold">Login</a></p>
+                    </div>
+
                 </form>
             </div>
         </div>

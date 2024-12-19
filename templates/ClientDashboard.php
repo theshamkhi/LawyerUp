@@ -3,10 +3,10 @@ include('../config/db.php');
 session_start();
 
 // Ensure the user is logged in as a client
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
-    header("Location: login.php");
-    exit();
-}
+// if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
+//     header("Location: login.php");
+//     exit();
+// }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lawyer_id = $_POST['lawyer_id'];
@@ -38,7 +38,6 @@ $result = $conn->query($sql);
     <title>LawyerUp - Book a Consultation</title>
     <link rel="icon" href="../assets/media/court.png"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body class="bg-gray-100">
 
