@@ -7,6 +7,21 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
     exit();
 }
 
+$logged_in_user_id = $_SESSION['user_id'];
+
+$user_sql = "SELECT * FROM User WHERE UserID = ?";
+$stmt = $conn->prepare($user_sql);
+$stmt->bind_param("i", $logged_in_user_id);
+$stmt->execute();
+$user_result = $stmt->get_result();
+
+if ($user_result->num_rows > 0) {
+    $user = $user_result->fetch_assoc();
+} else {
+    $user = null;
+}
+
+// Handeling the Booking form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lawyer_id = $_POST['lawyer_id'];
     $reservation_date = $_POST['reservation_date'];
@@ -56,19 +71,19 @@ $result = $conn->query($sql);
 <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-80 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
     <div class="h-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
     <!-- Sidebar Menu -->
-        <?php
-            $user_sql = "SELECT * FROM User";
-            $user_result = $conn->query($user_sql);
-            $user = $user_result->fetch_assoc();
-        ?>
-        <div class="flex flex-col">
-            <img src="https://images.rawpixel.com/image_social_landscape/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTA4L2thdGV2NjQ0N19waG90b19vZl93b29kZW5fZ2F2ZWxfaW5fdGhlX2NvdXJ0X2dhdmVsX3BsYWNlX29uX3RoZV83MmVhZDZjNS1lNGIxLTRlZDctYWIzNC03NThiMDVmZmY3YjRfMS5qcGc.jpg" alt="Lawyer Photo" class="object-cover">
-            <div class="px-3 py-4">
-                <h2 class="text-3xl font-semibold text-center text-white mb-4">LawyerUp</h2>
-                <hr class="mb-4">
-                <p class="text-base text-gray-300">Logged in as @<?php echo $user['Username']; ?></p>
-            </div>
+    <div class="flex flex-col">
+        <img src="https://images.rawpixel.com/image_social_landscape/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTA4L2thdGV2NjQ0N19waG90b19vZl93b29kZW5fZ2F2ZWxfaW5fdGhlX2NvdXJ0X2dhdmVsX3BsYWNlX29uX3RoZV83MmVhZDZjNS1lNGIxLTRlZDctYWIzNC03NThiMDVmZmY3YjRfMS5qcGc.jpg" alt="Lawyer Photo" class="object-cover">
+        <div class="px-3 py-4">
+            <h2 class="text-3xl font-semibold text-center text-white mb-4">LawyerUp</h2>
+            <hr class="mb-4">
+            <?php if ($user): ?>
+                <p class="text-xl text-gray-300"><?php echo htmlspecialchars($user['Name']); ?></p>
+            <?php else: ?>
+                <p class="text-base text-red-500">User not found.</p>
+            <?php endif; ?>
         </div>
+    </div>
+
       <ul class="space-y-2 font-medium px-3 py-4">
          <li>
             <a href="ClientDashboard.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
@@ -80,7 +95,7 @@ $result = $conn->query($sql);
             </a>
          </li>
          <li>
-            <a href="login.php?logout=true" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <a href="logout.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
                </svg>
