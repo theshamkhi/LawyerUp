@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
     exit();
 }
 
-// Handle reservation form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lawyer_id = $_POST['lawyer_id'];
     $reservation_date = $_POST['reservation_date'];
@@ -24,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch lawyer data and their associated user names
 $sql = "SELECT User.Name, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio
         FROM Lawyer
         JOIN User ON Lawyer.LawyerID = User.UserID";
@@ -38,15 +36,16 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LawyerUp - Book a Consultation</title>
+    <link rel="icon" href="../assets/media/court.png"/>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body class="bg-gray-100">
 
 <!-- Navbar -->
 
 
-<!-- Main Content -->
+<!-- Main -->
 <div class="container mx-auto p-6">
     <h2 class="text-4xl font-semibold text-center text-gray-800 mb-10">Find a Lawyer & Book a Consultation</h2>
 
@@ -71,7 +70,6 @@ $result = $conn->query($sql);
                     <p class="text-gray-600 mt-2">Experience: <?php echo $lawyer['ExpYears']; ?> years</p>
                     <p class="text-gray-600 mt-2"><?php echo $lawyer['Bio']; ?></p>
                     
-                    <!-- Book Consultation Form -->
                     <form method="POST" action="" class="mt-4">
                         <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
                         <div class="flex items-center space-x-4">

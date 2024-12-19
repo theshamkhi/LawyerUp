@@ -15,21 +15,19 @@ include('../config/db.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Common user inputs
     $name = $conn->real_escape_string($_POST['name']);
     $username = $conn->real_escape_string($_POST['username']);
     $email = $conn->real_escape_string($_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $role = $conn->real_escape_string($_POST['role']);
 
-    // Insert user into the User table
     $sql = "INSERT INTO User (Name, Username, Email, Password, Role) VALUES ('$name', '$username', '$email', '$password', '$role')";
 
     if ($conn->query($sql) === TRUE) {
         $lastUserID = $conn->insert_id;
 
         if ($role === 'Lawyer') {
-            // Lawyer-specific inputs
+            
             $specialization = $conn->real_escape_string($_POST['specialization']);
             $photoURL = $conn->real_escape_string($_POST['photoURL']);
             $rating = (float)$_POST['rating'];
@@ -37,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bio = $conn->real_escape_string($_POST['bio']);
             $phoneNumber = $conn->real_escape_string($_POST['phoneNumber']);
 
-            // Insert into Lawyer table
             $lawyerSql = "INSERT INTO Lawyer (LawyerID, Specialization, PhotoURL, Rating, ExpYears, Bio, PhoneNumber) 
                           VALUES ('$lastUserID', '$specialization', '$photoURL', '$rating', '$experience', '$bio', '$phoneNumber')";
 
@@ -140,7 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-    // Show Lawyer-specific fields based on role selection
     document.getElementById('role').addEventListener('change', function() {
         const role = this.value;
         const lawyerFields = document.getElementById('lawyerFields');
