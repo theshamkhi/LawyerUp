@@ -49,9 +49,11 @@ if ($lawyer_result->num_rows > 0) {
         <div class="flex flex-col">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
             <div class="px-3 py-4">
-                <h2 class="text-xl font-semibold text-white uppercase"><?php echo $lawyer['Name']; ?></h2>
-                <p class="text-base text-gray-300"><?php echo $lawyer['Specialization'] . "   -   " . $lawyer['ExpYears'] . " years of experince"; ?></p>
-                <p class="text-base text-gray-300"><?php echo $lawyer['Bio']; ?></p>
+                <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?></h2>
+                <p class="text-base text-gray-100 mb-4"><?php echo $lawyer['Specialization']?> Specialist</p>
+                <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
+                    <p class="text-base text-gray-300">&#10077; <?php echo $lawyer['Bio']; ?> &#10078;</p>
+                <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
             </div>
         </div>
       <?php else: ?>
@@ -60,7 +62,7 @@ if ($lawyer_result->num_rows > 0) {
          </div>
       <?php endif; ?>
 
-      <ul class="space-y-2 font-medium px-3 py-4">
+      <ul class="space-y-2 font-medium px-3 py-2">
          <li>
             <a href="ClientDashboard.php" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
@@ -109,7 +111,7 @@ if ($lawyer_result->num_rows > 0) {
                             <td class="px-6 py-4 text-sm"><?php echo $reservation['Name']; ?></td>
                             <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
                             <td class="px-6 py-4">
-                                <form method="POST" action="reservations.php" class="flex space-x-2">
+                                <form method="POST" action="#" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
                                     <button name="action" value="accept" class="text-xl hover:scale-105">✅</button>
                                     <button name="action" value="reject" class="text-xl hover:scale-105">❌</button>
