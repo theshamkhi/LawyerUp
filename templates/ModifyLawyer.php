@@ -56,7 +56,7 @@ if ($lawyer_result->num_rows > 0) {
         <div class="flex flex-col space-y-2">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
             <div class="px-3 pt-4">
-                <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><a href="ModifyLawyer.php"><?php echo $lawyer['Name']; ?></a></h2>
+                <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?></h2>
                 <p class="text-base text-gray-400">&#128221;  <?php echo $lawyer['Specialization']?> Specialist</p>
                 <p class="text-base text-gray-400">&#128188;  <?php echo $lawyer['ExpYears']; ?> Years of experience</p>
                 <p class="text-base text-gray-400">&#128231;  <?php echo $lawyer['Email']; ?></p>
@@ -96,69 +96,65 @@ if ($lawyer_result->num_rows > 0) {
 </aside>
 
 <div class="p-8 sm:ml-80">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Reservations</h2>
     <?php
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
-            $reservation_id = intval($_POST['reservation_id']);
-            $action = $_POST['action'];
+    $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, 
+            Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
+            FROM Lawyer
+            JOIN User ON Lawyer.LawyerID = User.UserID
+            WHERE Lawyer.LawyerID = $lawyer_id";
+    $result = $conn->query($sql);
+    $user_data = $result->fetch_assoc();
 
-            if ($action === 'accept') {
-                $new_status = 'Confirmed';
-            } elseif ($action === 'reject') {
-                $new_status = 'Rejected';
-            }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['update_user'])) {
 
-            $update_sql = "UPDATE Reservation SET Status = ? WHERE ReservationID = ?";
-            $stmt = $conn->prepare($update_sql);
-            $stmt->bind_param('si', $new_status, $reservation_id);
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $specialization = $_POST['specialization'];
+            $phone = $_POST['phone'];
+            $bio = $_POST['bio'];
 
-            if ($stmt->execute()) {
-                echo "<p class='text-green-500 my-4'>Reservation status updated successfully.</p>";
-            } else {
-                echo "<p class='text-red-500 my-4'>Failed to update reservation status.</p>";
-            }
+            $update_user_sql = "UPDATE User SET Name = '$name', Email = '$email' WHERE UserID = $lawyer_id";
+            $conn->query($update_user_sql);
 
+            $update_lawyer_sql = "UPDATE Lawyer SET Specialization = '$specialization', PhoneNumber = '$phone', Bio = '$bio' 
+                                WHERE LawyerID = $lawyer_id";
+            $conn->query($update_lawyer_sql);
         }
-
-        $reservation_sql = "SELECT User.Name AS Name, Reservation.ReservationDate, Reservation.ReservationID, Reservation.Status
-                            FROM Reservation
-                            JOIN User ON Reservation.ClientID = User.UserID
-                            WHERE Reservation.LawyerID = $lawyer_id";
-
-        $reservation_result = $conn->query($reservation_sql);
+    }
     ?>
-    <?php if ($reservation_result->num_rows > 0) : ?>
-        <div class="flex items-center justify-center overflow-x-auto">
-            <table class="min-w-full table-auto border-collapse bg-white shadow-lg">
-                <thead class="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Client</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Reservation Date</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Name']); ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['ReservationDate']); ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Status']); ?></td>
-                            <td class="px-6 py-4">
-                                <form method="POST" action="" class="flex space-x-2">
-                                    <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
-                                    <button name="action" value="accept" class="text-xl hover:scale-105">✅</button>
-                                    <button name="action" value="reject" class="text-xl hover:scale-105">❌</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="w-full my-4 mx-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
+            <div class="pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
+                <form method="POST" class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Name</p>
+                        <input type="text" name="name" value="<?= htmlspecialchars($user_data['Name']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                    </div>
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Email</p>
+                        <input type="email" name="email" value="<?= htmlspecialchars($user_data['Email']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                    </div>
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Specialization</p>
+                        <input type="text" name="specialization" value="<?= htmlspecialchars($user_data['Specialization']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                    </div>
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Phone Number</p>
+                        <input type="text" name="phone" value="<?= htmlspecialchars($user_data['PhoneNumber']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                    </div>
+                    <div class="relative">
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Bio</p>
+                        <textarea name="bio" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"><?= htmlspecialchars($user_data['Bio']) ?></textarea>
+                    </div>
+                    <div class="relative">
+                        <button type="submit" name="update_user" class="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500 rounded-lg transition duration-200 hover:bg-indigo-600 ease">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    <?php else : ?>
-        <p class="text-gray-700">You have no upcoming reservations.</p>
-    <?php endif; ?>
+    </div>
+
 </div>
 
 
