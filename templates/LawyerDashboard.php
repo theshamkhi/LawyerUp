@@ -56,7 +56,7 @@ if ($lawyer_result->num_rows > 0) {
         <div class="flex flex-col space-y-2">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
             <div class="px-3 pt-4">
-                <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?></h2>
+                <h2 class="text-xl font-semibold text-white text-center uppercase mb-4"><?php echo $lawyer['Name']; ?> &#128994;</h2>
                 <p class="text-base text-gray-400">&#128221;  <?php echo $lawyer['Specialization']?> Specialist</p>
                 <p class="text-base text-gray-400">&#128188;  <?php echo $lawyer['ExpYears']; ?> Years of experience</p>
                 <p class="text-base text-gray-400">&#128231;  <?php echo $lawyer['Email']; ?></p>
@@ -97,6 +97,7 @@ if ($lawyer_result->num_rows > 0) {
 
 
 <div class="p-8 sm:ml-80">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Reservations</h2>
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
             $reservation_id = intval($_POST['reservation_id']);
@@ -113,9 +114,9 @@ if ($lawyer_result->num_rows > 0) {
             $stmt->bind_param('si', $new_status, $reservation_id);
 
             if ($stmt->execute()) {
-                echo "<p class='text-green-500'>Reservation status updated successfully.</p>";
+                echo "<p class='text-green-500 my-4'>Reservation status updated successfully.</p>";
             } else {
-                echo "<p class='text-red-500'>Failed to update reservation status.</p>";
+                echo "<p class='text-red-500 my-4'>Failed to update reservation status.</p>";
             }
 
         }
@@ -127,7 +128,6 @@ if ($lawyer_result->num_rows > 0) {
 
         $reservation_result = $conn->query($reservation_sql);
     ?>
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Reservations</h2>
     <?php if ($reservation_result->num_rows > 0) : ?>
         <div class="flex items-center justify-center overflow-x-auto">
             <table class="min-w-full table-auto border-collapse bg-white shadow-lg">

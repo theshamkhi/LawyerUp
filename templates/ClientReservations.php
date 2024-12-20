@@ -21,21 +21,6 @@ if ($user_result->num_rows > 0) {
     $user = null;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $lawyer_id = $_POST['lawyer_id'];
-    $reservation_date = $_POST['reservation_date'];
-    $client_id = $_SESSION['user_id'];
-
-    $sql = "INSERT INTO Reservation (LawyerID, ClientID, ReservationDate) 
-            VALUES ('$lawyer_id', '$client_id', '$reservation_date')";
-
-    if ($conn->query($sql) === TRUE) {
-        $success_message = "Reservation successfully made!";
-    } else {
-        $error_message = "Error: " . $conn->error;
-    }
-}
-
 $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
         FROM Lawyer
         JOIN User ON Lawyer.LawyerID = User.UserID";
@@ -118,49 +103,62 @@ $result = $conn->query($sql);
    </div>
 </aside>
 
+<div class="p-8 sm:ml-80">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Booked Consultations</h2>
+    <?php
+        $reservation_sql = "
+        SELECT Reservation.LawyerID, Reservation.ReservationDate, Reservation.ReservationID, Reservation.Status, User.Name AS LawyerName
+        FROM Reservation
+        JOIN User ON Reservation.LawyerID = User.UserID
+        WHERE Reservation.ClientID = $logged_in_user_id";
 
-<div class="flex-1 ml-0 sm:ml-80 p-8">
-    <h2 class="text-4xl font-semibold text-gray-800 mb-10">Find a Lawyer & Book a Consultation</h2>
+        $reservation_result = $conn->query($reservation_sql);
 
-    <?php if (isset($success_message)) : ?>
-        <div class="bg-green-100 text-green-800 p-4 rounded-md mb-6">
-            <strong><?php echo $success_message; ?></strong>
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
+            $reservation_id = intval($_POST['reservation_id']);
+            $action = $_POST['action'];
+
+            if ($action === 'cancel') {
+                $update_sql = "DELETE FROM Reservation WHERE ReservationID = $reservation_id";
+                if ($conn->query($update_sql) === TRUE) {
+                    echo "<p class='text-green-500 my-4'>Reservation cancelled successfully.</p>";
+                } else {
+                    echo "<p class='text-red-500 my-4'>Error cancelling reservation: " . $conn->error . "</p>";
+                }
+            }
+        }
+    ?>
+    <?php if ($reservation_result->num_rows > 0) : ?>
+        <div class="flex items-center justify-center overflow-x-auto">
+            <table class="min-w-full table-auto border-collapse bg-white shadow-lg">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Lawyer</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Reservation Date</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Status</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['LawyerName']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
+                            <td class="px-6 py-4">
+                                <form method="POST" action="" class="flex space-x-2">
+                                    <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
+                                    <button name="action" value="cancel" class="text-xl hover:scale-105">❌</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
         </div>
-    <?php elseif (isset($error_message)) : ?>
-        <div class="bg-red-100 text-red-800 p-4 rounded-md mb-6">
-            <strong><?php echo $error_message; ?></strong>
-        </div>
+    <?php else : ?>
+        <p class="text-gray-700">You haven't Booked any Consultations.</p>
     <?php endif; ?>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style="align-items: start;">
-        <?php while ($lawyer = $result->fetch_assoc()) : ?>
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
-                    <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
-                    <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
-                    <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
-                    <p class="text-lg text-gray-700">&#127775; <?php echo $lawyer['Rating']; ?>/5</p>
-                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> years of experience</p>
-                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
-                    <p class="text-lg text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
-                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
-
-                    <form method="POST" action="" class="mt-4">
-                        <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
-                        <div class="flex items-center space-x-4">
-                            <input type="datetime-local" name="reservation_date" required class="p-2 border border-gray-300 rounded-md w-full">
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Book</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        <?php endwhile; ?>
-    </div>
-
-
-
 </div>
 
 
