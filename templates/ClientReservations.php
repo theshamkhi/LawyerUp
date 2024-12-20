@@ -148,7 +148,7 @@ $result = $conn->query($sql);
                             <td class="px-6 py-4">
                                 <form method="POST" action="" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
-                                    <button name="action" value="cancel" class="text-xl hover:scale-105">❌</button>
+                                    <button name="action" value="cancel" class="text-xl hover:scale-105">🗑️</button>
                                 </form>
                             </td>
                         </tr>
