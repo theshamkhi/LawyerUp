@@ -80,7 +80,7 @@ $result = $conn->query($sql);
 
       <ul class="space-y-2 font-medium px-3 pb-4">
         <li>
-        <?php if ($user): ?>
+            <?php if ($user): ?>
                 <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <img class="flex-shrink-0 w-8 h-8" src="../assets/media/user.png">
                     <span class="flex-1 ms-3 whitespace-nowrap"><?php echo htmlspecialchars($user['Name']); ?> &#128994;</span>
