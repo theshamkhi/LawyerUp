@@ -61,7 +61,6 @@ if ($lawyer_result->num_rows > 0) {
                 <p class="text-base text-gray-400">&#128188;  <?php echo $lawyer['ExpYears']; ?> Years of experience</p>
                 <p class="text-base text-gray-400">&#128231;  <?php echo $lawyer['Email']; ?></p>
                 <p class="text-base text-gray-400">&#128222;  <?php echo $lawyer['PhoneNumber']; ?></p>
-                <p class="text-base text-gray-400">&#127775;  <?php echo $lawyer['Rating']; ?>/5</p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
                     <p class="text-base text-gray-300"><?php echo $lawyer['Bio']; ?></p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">

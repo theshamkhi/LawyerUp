@@ -33,7 +33,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawyerUp - Book a Consultation</title>
+    <title>My Reservations</title>
     <link rel="icon" href="../assets/media/court.png"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
@@ -104,7 +104,7 @@ $result = $conn->query($sql);
 </aside>
 
 <div class="p-8 sm:ml-80">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Booked Consultations</h2>
+    <h2 class="text-4xl font-semibold text-gray-700 mb-6">Booked Consultations</h2>
     <?php
         $reservation_sql = "
         SELECT Reservation.LawyerID, Reservation.ReservationDate, Reservation.ReservationID, Reservation.Status, User.Name AS LawyerName

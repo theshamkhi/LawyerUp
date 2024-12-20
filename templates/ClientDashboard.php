@@ -48,7 +48,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LawyerUp - Book a Consultation</title>
+    <title>Client Dashboard</title>
     <link rel="icon" href="../assets/media/court.png"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
@@ -120,7 +120,7 @@ $result = $conn->query($sql);
 
 
 <div class="flex-1 ml-0 sm:ml-80 p-8">
-    <h2 class="text-4xl font-semibold text-gray-800 mb-10">Find a Lawyer & Book a Consultation</h2>
+    <h2 class="text-4xl font-semibold text-gray-700 mb-10">Find a Lawyer & Book a Consultation</h2>
 
     <?php if (isset($success_message)) : ?>
         <div class="bg-green-100 text-green-800 p-4 rounded-md mb-6">

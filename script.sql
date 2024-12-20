@@ -26,7 +26,7 @@ CREATE TABLE Reservation (
     ClientID INT NOT NULL,
     LawyerID INT NOT NULL,
     ReservationDate DATETIME NOT NULL,
-    Status ENUM('Pending', 'Confirmed', 'Cancelled', 'Completed') NOT NULL,
+    Status ENUM('Pending', 'Confirmed', 'Cancelled') NOT NULL,
     FOREIGN KEY (ClientID) REFERENCES User(UserID) ON DELETE CASCADE,
     FOREIGN KEY (LawyerID) REFERENCES Lawyer(LawyerID) ON DELETE CASCADE
 );
@@ -39,3 +39,12 @@ CREATE TABLE Availability (
     Status ENUM('Available', 'Booked', 'Inactive') NOT NULL,
     FOREIGN KEY (LawyerID) REFERENCES Lawyer(LawyerID) ON DELETE CASCADE
 );
+
+
+INSERT INTO User (Name, Username, Email, Password, Role) VALUES
+('Saul Goodman', 'Saul123', '212-636-253939', 'bettercallsaul@gmail.com', 'saul123', 'Lawyer'),
+('Mr White', 'White123', '212-636-255497', 'mrwhite@gmail.com', 'mrwhite123', 'Client');
+
+
+INSERT INTO Reservation (ClientID, LawyerID, ReservationDate, Status) VALUES 
+(2, 1, '2024-12-16 10:30:00', 'Pending');
