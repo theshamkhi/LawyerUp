@@ -1,67 +1,76 @@
-# LawyerUp - Consultation Management
+# 🔖 LawyerUp
 
-## Project Description
+## 🔄 Project Description
 
 This project aims to develop an intuitive website for a specialized law firm, enabling:
 
 - **Clients**: To browse lawyer profiles, book consultations, and manage their reservations.
 - **Lawyers**: To manage their availability, reservations, and professional profiles.
 
+
+![image](https://github.com/user-attachments/assets/4215c4ed-48bb-4ac3-8354-0d68d4c2f859)
+
+![image](https://github.com/user-attachments/assets/17662e3a-0775-4966-975f-8bcb4e69185b)
+
 ---
 
-## Key Features
+## 📊 Key Features
 
-### Clients
+### 👤 Clients
 
-- **Sign Up and Log In**:
+- **Sign Up and Log In** :
   - Create an account and log in.
   - Access a dedicated interface to manage activities.
 
-- **Browse Lawyer Profiles**:
+- **Browse Lawyer Profiles** :
   - View specialties, years of experience, and other details.
 
-- **Book Consultations**:
+- **Book Consultations** :
   - Choose a lawyer and an available time slot.
 
-- **Manage Reservations**:
+- **Manage Reservations** :
   - Add or cancel a reservation.
 
-### Lawyers
+### 👨‍💼 Lawyers
 
-- **Log In**:
+- **Log In** :
   - Access a dashboard to manage activities.
 
-- **Manage Reservations**:
+- **Manage Reservations** :
   - Accept or decline requests based on availability.
 
-- **Manage Professional Profile**:
+- **Manage Professional Profile** :
   - Update photo, biography, specialties, and contact details.
 
-- **Manage Availability**:
+- **Manage Availability** :
   - Update available time slots.
 
-- **Statistics**:
+- **Statistics** :
   - Number of consultations reserved by clients.
+
 ---
 
-## Project Architecture
+## 🔧 Project Architecture
 
-### Multi-Role Structure
+### 🔊 Multi-Role Structure
 - **Clients**
 - **Lawyers**
 
-### Diagrams
+### ⭐ Diagrams
 
 #### Entity-Relationship Diagram (ERD)
+
+![ERD](https://github.com/user-attachments/assets/ac459ef4-35ca-4485-9c66-abbb62880639)
 
 
 #### UML Diagram
 
+![UML](https://github.com/user-attachments/assets/547e8c84-3951-4611-aeee-1c5ca5b03761)
+
 ---
 
-## Technologies Used
+## 🛠️ Technologies Used
 
 - **Frontend**: HTML, Tailwind CSS, JavaScript, AOS Animations.
 - **Backend**: PHP.
 - **Database**: MySQL.
-
