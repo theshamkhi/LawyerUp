@@ -25,12 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $availability_id = $conn->real_escape_string($_POST['availability_id']);
         $client_id = $_SESSION['user_id'];
 
-        $slot_query = "SELECT Date, StartTime, EndTime FROM Availability WHERE AvailabilityID = $availability_id AND LawyerID = $lawyer_id AND Status = 'Available'";
-        $slot_result = $conn->query($slot_query);
+        $date_query = "SELECT Date, StartTime, EndTime FROM Availability WHERE AvailabilityID = $availability_id AND LawyerID = $lawyer_id AND Status = 'Available'";
+        $date_result = $conn->query($date_query);
 
-        if ($slot_result->num_rows > 0) {
-            $slot = $slot_result->fetch_assoc();
-            $reservation_date = $slot['Date'] . ' ' . $slot['StartTime'];
+        if ($date_result->num_rows > 0) {
+            $date = $date_result->fetch_assoc();
+            $reservation_date = $date['Date'] . ' ' . $date['StartTime'];
 
             $reservation_sql = "INSERT INTO Reservation (LawyerID, ClientID, ReservationDate, Status) 
                                 VALUES ('$lawyer_id', '$client_id', '$reservation_date', 'Pending')";
@@ -69,9 +69,6 @@ $result = $conn->query($sql);
 </head>
 <body class="bg-gray-100">
 
-<!-- Navbar -->
-
-
 <!-- Main -->
 <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
    <span class="sr-only">Open sidebar</span>
@@ -96,7 +93,7 @@ $result = $conn->query($sql);
             <?php if ($user): ?>
                 <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <img class="flex-shrink-0 w-8 h-8" src="../assets/media/user.png">
-                    <span class="flex-1 ms-3 whitespace-nowrap"><?php echo htmlspecialchars($user['Name']); ?> &#128994;</span>
+                    <span class="flex-1 ms-3 whitespace-nowrap"><?php echo $user['Name']; ?> &#128994;</span>
                 </a>
             <?php else: ?>
                 <p class="text-base text-red-500">User not found.</p>
@@ -146,55 +143,50 @@ $result = $conn->query($sql);
     <?php endif; ?>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style="align-items: start;">
-    <?php while ($lawyer = $result->fetch_assoc()) : ?>
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
-            <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
-            <div class="p-6">
-                <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
-                <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
-                <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
-                <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
-                <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> Years of Experience</p>
+        <?php while ($lawyer = $result->fetch_assoc()) : ?>
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+                <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
+                    <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
+                    <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
+                    <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
+                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> Years of Experience</p>
 
-                <form method="POST" action="" class="mt-4">
-                    <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
+                    <form method="POST" action="" class="mt-4">
+                        <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
 
-                    <?php
-                    $lawyer_id = $lawyer['LawyerID'];
-                    $availability_query = "SELECT AvailabilityID, Date, StartTime, EndTime 
-                                           FROM Availability 
-                                           WHERE LawyerID = $lawyer_id AND Status = 'Available'";
-                    $availability_result = $conn->query($availability_query);
-                    ?>
+                        <?php
+                        $lawyer_id = $lawyer['LawyerID'];
+                        $availability_query = "SELECT AvailabilityID, Date, StartTime, EndTime 
+                                            FROM Availability 
+                                            WHERE LawyerID = $lawyer_id AND Status = 'Available'";
+                        $availability_result = $conn->query($availability_query);
+                        ?>
 
-                    <?php if ($availability_result->num_rows > 0) : ?>
-                        <label for="available_slots" class="block text-gray-700">Choose an available date:</label>
-                        <select name="availability_id" required class="p-2 border border-gray-300 rounded-md w-full">
-                            <?php while ($slot = $availability_result->fetch_assoc()) : ?>
-                                <option value="<?php echo $slot['AvailabilityID']; ?>">
-                                    <?php echo date('F j, Y', strtotime($slot['Date'])) . ' - ' . date('h:i A', strtotime($slot['StartTime'])) . ' to ' . date('h:i A', strtotime($slot['EndTime'])); ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                        <div class="flex items-center justify-center">
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-4">Book</button>
-                        </div>
-                    <?php else : ?>
-                        <p class="text-red-500 mt-4">No available dates for this lawyer.</p>
-                    <?php endif; ?>
-                </form>
+                        <?php if ($availability_result->num_rows > 0) : ?>
+                            <label for="available_slots" class="block text-gray-700">Choose an available date:</label>
+                            <select name="availability_id" required class="p-2 border border-gray-300 rounded-md w-full">
+                                <?php while ($date = $availability_result->fetch_assoc()) : ?>
+                                    <option value="<?php echo $date['AvailabilityID']; ?>">
+                                        <?php echo date('F j, Y', strtotime($date['Date'])) . ' - ' . date('h:i A', strtotime($date['StartTime'])) . ' to ' . date('h:i A', strtotime($date['EndTime'])); ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                            <div class="flex items-center justify-center">
+                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-4">Book</button>
+                            </div>
+                        <?php else : ?>
+                            <p class="text-red-500 mt-4">No available dates for this lawyer.</p>
+                        <?php endif; ?>
+                    </form>
+                </div>
             </div>
-        </div>
-    <?php endwhile; ?>
+        <?php endwhile; ?>
+    </div>
 </div>
 
 
-
-
-</div>
-
-
-<!-- Footer -->
 <script>
   AOS.init();
 </script>
