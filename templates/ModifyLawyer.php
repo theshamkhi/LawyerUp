@@ -10,18 +10,6 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 
 $lawyer_id = $_SESSION['user_id'];
 
-$sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
-        FROM Lawyer
-        JOIN User ON Lawyer.LawyerID = User.UserID
-        WHERE Lawyer.LawyerID = $lawyer_id";
-$lawyer_result = $conn->query($sql);
-
-if ($lawyer_result->num_rows > 0) {
-    $lawyer = $lawyer_result->fetch_assoc();
-} else {
-    $lawyer = null;
-    $error_message = "Lawyer profile not found.";
-}
 
 $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, 
         Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
@@ -29,7 +17,7 @@ $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, La
         JOIN User ON Lawyer.LawyerID = User.UserID
         WHERE Lawyer.LawyerID = $lawyer_id";
 $result = $conn->query($sql);
-$user_data = $result->fetch_assoc();
+$lawyer = $result->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_user'])) {
@@ -68,9 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body class="bg-gray-100">
-
-<!-- Navbar -->
-
 
 <!-- Main -->
 
@@ -133,23 +118,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form method="POST" class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Name</p>
-                        <input type="text" name="name" value="<?= htmlspecialchars($user_data['Name']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        <input type="text" name="name" value="<?= $lawyer['Name'] ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">PhotoURL</p>
-                        <input type="text" name="photo" value="<?= htmlspecialchars($user_data['PhotoURL']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        <input type="text" name="photo" value="<?= $lawyer['PhotoURL'] ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Specialization</p>
-                        <input type="text" name="specialization" value="<?= htmlspecialchars($user_data['Specialization']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        <input type="text" name="specialization" value="<?= $lawyer['Specialization'] ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Phone Number</p>
-                        <input type="text" name="phone" value="<?= htmlspecialchars($user_data['PhoneNumber']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        <input type="text" name="phone" value="<?= $lawyer['PhoneNumber'] ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Bio</p>
-                        <textarea name="bio" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"><?= htmlspecialchars($user_data['Bio']) ?></textarea>
+                        <textarea name="bio" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"><?= $lawyer['Bio'] ?></textarea>
                     </div>
                     <div class="relative">
                         <button type="submit" name="update_user" class="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500 rounded-lg transition duration-200 hover:bg-indigo-600 ease">Save Changes</button>
@@ -162,8 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 
-
-<!-- Footer -->
 
 <script>
   AOS.init();
