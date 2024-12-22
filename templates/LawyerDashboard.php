@@ -125,20 +125,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
    </div>
 </aside>
 
+<div class="p-4 sm:p-8 lg:ml-80">
+    <h2 class="text-lg sm:text-2xl font-semibold text-gray-700 mb-6">Manage Availability</h2>
 
-<div class="p-8 sm:ml-80">
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Manage Availability</h2>
-
-    <form method="POST" class="flex items-center justify-center space-x-6">
-        <input type="date" name="date" required class="p-2 text-gray-400 rounded-lg">
-        <label for="date" class="text-gray-700 font-semibold">From</label>
-        <input type="time" name="start_time" required class="p-2 text-gray-400 rounded-lg">
-        <label for="date" class="text-gray-700 font-semibold">To</label>
-        <input type="time" name="end_time" required class="p-2 text-gray-400 rounded-lg">
-        <button type="submit" class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg">Add Availability</button>
+    <!-- Form -->
+    <form method="POST" class="flex flex-wrap items-center justify-center gap-4">
+        <div class="flex flex-col">
+            <label for="date" class="text-gray-700 font-semibold">Date</label>
+            <input type="date" name="date" required class="p-2 rounded-lg">
+        </div>
+        <div class="flex flex-col">
+            <label for="start_time" class="text-gray-700 font-semibold">From</label>
+            <input type="time" name="start_time" required class="p-2 rounded-lg">
+        </div>
+        <div class="flex flex-col">
+            <label for="end_time" class="text-gray-700 font-semibold">To</label>
+            <input type="time" name="end_time" required class="p-2 rounded-lg">
+        </div>
+        <div class="flex flex-col">
+            <br>
+            <button type="submit" class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg">Add Availability</button>
+        </div>
     </form>
 
-    <div class="flex items-center justify-center overflow-x-auto bg-white shadow-lg rounded-lg mt-8 mb-16">
+    <!-- Availability Table -->
+    <div class="overflow-auto bg-white shadow-lg rounded-lg mt-8 mb-16">
         <?php
         $availability_sql = "SELECT AvailabilityID, Date, StartTime, EndTime, Status 
                             FROM Availability 
@@ -146,24 +157,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
                             ORDER BY Date, StartTime";
         $availability_result = $conn->query($availability_sql);
         ?>
-        <table class="min-w-full table-auto border-collapse">
+        <table class="min-w-full border-collapse text-sm">
             <thead class="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                    <th class="px-6 py-3 text-left text-sm font-medium text-white">Date</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium text-white">From</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium text-white">To</th>
-                    <th class="px-6 py-3 text-left text-sm font-medium text-white">Actions</th>
+                    <th class="px-6 py-3 text-left font-medium text-white">Date</th>
+                    <th class="px-6 py-3 text-left font-medium text-white">From</th>
+                    <th class="px-6 py-3 text-left font-medium text-white">To</th>
+                    <th class="px-6 py-3 text-left font-medium text-white">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php while ($availability = $availability_result->fetch_assoc()): ?>
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="px-6 py-4 text-sm"><?php echo $availability['Date']; ?></td>
-                        <td class="px-6 py-4 text-sm"><?php echo $availability['StartTime']; ?></td>
-                        <td class="px-6 py-4 text-sm"><?php echo $availability['EndTime']; ?></td>
-                        <td class="px-6 py-4 text-sm">
+                        <td class="px-6 py-4"><?php echo $availability['Date']; ?></td>
+                        <td class="px-6 py-4"><?php echo $availability['StartTime']; ?></td>
+                        <td class="px-6 py-4"><?php echo $availability['EndTime']; ?></td>
+                        <td class="px-6 py-4">
                             <form method="POST" class="inline-block">
-                                <input type="hidden" name="delete_availability_id" value="<?php echo $availability['AvailabilityID']; ?>" />
+                                <input type="hidden" name="delete_availability_id" value="<?php echo $availability['AvailabilityID']; ?>">
                                 <button type="submit" class="text-xl hover:scale-105">🗑️</button>
                             </form>
                         </td>
@@ -173,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
         </table>
     </div>
 
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Reservations</h2>
+
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
             $reservation_id = intval($_POST['reservation_id']);
@@ -204,25 +215,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
 
         $reservation_result = $conn->query($reservation_sql);
     ?>
+    <!-- Reservations Section -->
+    <h2 class="text-lg sm:text-2xl font-semibold text-gray-700 mb-6">Reservations (<?php echo $reservation_result->num_rows; ?>)</h2>
     <?php if ($reservation_result->num_rows > 0) : ?>
-        <div class="flex items-center justify-center overflow-x-auto bg-white shadow-lg rounded-lg" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
-            <table class="min-w-full table-auto border-collapse bg-white shadow-lg">
+        <div class="overflow-auto bg-white shadow-lg rounded-lg">
+            <table class="min-w-full border-collapse text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Client</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Reservation Date</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Actions</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Client</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Reservation Date</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Status</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Name']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['Name']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['ReservationDate']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['Status']; ?></td>
                             <td class="px-6 py-4">
-                                <form method="POST" action="" class="flex space-x-2">
+                                <form method="POST" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
                                     <button name="action" value="accept" class="text-xl hover:scale-105">✅</button>
                                     <button name="action" value="reject" class="text-xl hover:scale-105">❌</button>
@@ -240,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
 
 
 
-<!-- Footer -->
+
 <script>
   AOS.init();
 </script>
