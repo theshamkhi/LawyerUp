@@ -9,11 +9,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
 
 $logged_in_user_id = $_SESSION['user_id'];
 
-$user_sql = "SELECT * FROM User WHERE UserID = ?";
-$stmt = $conn->prepare($user_sql);
-$stmt->bind_param("i", $logged_in_user_id);
-$stmt->execute();
-$user_result = $stmt->get_result();
+$user_sql = "SELECT * FROM User WHERE UserID = $logged_in_user_id";
+$user_result = $conn->query($user_sql);
 
 if ($user_result->num_rows > 0) {
     $user = $user_result->fetch_assoc();
@@ -44,9 +41,6 @@ $result = $conn->query($sql);
 </head>
 <body class="bg-gray-100">
 
-<!-- Navbar -->
-
-
 <!-- Main -->
 <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar" aria-controls="default-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
    <span class="sr-only">Open sidebar</span>
@@ -71,7 +65,7 @@ $result = $conn->query($sql);
             <?php if ($user): ?>
                 <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <img class="flex-shrink-0 w-8 h-8" src="../assets/media/user.png">
-                    <span class="flex-1 ms-3 whitespace-nowrap"><?php echo htmlspecialchars($user['Name']); ?> &#128994;</span>
+                    <span class="flex-1 ms-3 whitespace-nowrap"><?php echo $user['Name']; ?> &#128994;</span>
                 </a>
             <?php else: ?>
                 <p class="text-base text-red-500">User not found.</p>
@@ -166,7 +160,6 @@ $result = $conn->query($sql);
 </div>
 
 
-<!-- Footer -->
 <script>
   AOS.init();
 </script>
