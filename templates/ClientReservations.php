@@ -123,6 +123,7 @@ $result = $conn->query($sql);
 
             if ($action === 'cancel') {
                 $update_sql = "DELETE FROM Reservation WHERE ReservationID = $reservation_id";
+                
                 if ($conn->query($update_sql) === TRUE) {
                     echo "<p class='text-green-500 my-4'>Reservation cancelled successfully.</p>";
                 } else {
@@ -132,24 +133,24 @@ $result = $conn->query($sql);
         }
     ?>
     <?php if ($reservation_result->num_rows > 0) : ?>
-        <div class="flex items-center justify-center overflow-x-auto bg-white shadow-lg rounded-lg" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
-            <table class="min-w-full table-auto border-collapse">
+        <div class="overflow-auto bg-white shadow-lg rounded-lg" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+            <table class="min-w-full table-auto border-collapse text-sm">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Lawyer</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Reservation Date</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Status</th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-white">Action</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Lawyer</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Reservation Date</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Status</th>
+                        <th class="px-6 py-3 text-left font-medium text-white">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['LawyerName']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['LawyerName']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['ReservationDate']; ?></td>
+                            <td class="px-6 py-4"><?php echo $reservation['Status']; ?></td>
                             <td class="px-6 py-4">
-                                <form method="POST" action="" class="flex space-x-2">
+                                <form method="POST" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">
                                     <button name="action" value="cancel" class="text-xl hover:scale-105">🗑️</button>
                                 </form>

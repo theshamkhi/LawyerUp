@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $availability_sql = "UPDATE Availability SET Status = 'Booked' WHERE AvailabilityID = $availability_id";
             $conn->query($availability_sql);
         } else {
-            $error_message = "Selected slot is no longer available.";
+            $error_message = "Selected date is no longer available.";
         }
     }
 }
@@ -168,7 +168,7 @@ $result = $conn->query($sql);
                     ?>
 
                     <?php if ($availability_result->num_rows > 0) : ?>
-                        <label for="available_slots" class="block text-gray-700">Choose an available slot:</label>
+                        <label for="available_slots" class="block text-gray-700">Choose an available date:</label>
                         <select name="availability_id" required class="p-2 border border-gray-300 rounded-md w-full">
                             <?php while ($slot = $availability_result->fetch_assoc()) : ?>
                                 <option value="<?php echo $slot['AvailabilityID']; ?>">
@@ -176,9 +176,11 @@ $result = $conn->query($sql);
                                 </option>
                             <?php endwhile; ?>
                         </select>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-4">Book</button>
+                        <div class="flex items-center justify-center">
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-4">Book</button>
+                        </div>
                     <?php else : ?>
-                        <p class="text-red-500 mt-4">No available slots for this lawyer.</p>
+                        <p class="text-red-500 mt-4">No available dates for this lawyer.</p>
                     <?php endif; ?>
                 </form>
             </div>
