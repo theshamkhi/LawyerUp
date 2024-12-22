@@ -1,5 +1,6 @@
 <?php
 include('../config/db.php');
+
 session_start();
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
@@ -9,11 +10,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'Client') {
 
 $logged_in_user_id = $_SESSION['user_id'];
 
-$user_sql = "SELECT * FROM User WHERE UserID = ?";
-$stmt = $conn->prepare($user_sql);
-$stmt->bind_param("i", $logged_in_user_id);
-$stmt->execute();
-$user_result = $stmt->get_result();
+$user_sql = "SELECT * FROM User WHERE UserID = $logged_in_user_id";
+$user_result = $conn->query($user_sql);
 
 if ($user_result->num_rows > 0) {
     $user = $user_result->fetch_assoc();
@@ -22,19 +20,31 @@ if ($user_result->num_rows > 0) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $lawyer_id = $_POST['lawyer_id'];
-    $reservation_date = $_POST['reservation_date'];
-    $client_id = $_SESSION['user_id'];
+    if (isset($_POST['lawyer_id'], $_POST['availability_id'])) {
+        $lawyer_id = $conn->real_escape_string($_POST['lawyer_id']);
+        $availability_id = $conn->real_escape_string($_POST['availability_id']);
+        $client_id = $_SESSION['user_id'];
 
-    $sql = "INSERT INTO Reservation (LawyerID, ClientID, ReservationDate) 
-            VALUES ('$lawyer_id', '$client_id', '$reservation_date')";
+        $slot_query = "SELECT Date, StartTime, EndTime FROM Availability WHERE AvailabilityID = $availability_id AND LawyerID = $lawyer_id AND Status = 'Available'";
+        $slot_result = $conn->query($slot_query);
 
-    if ($conn->query($sql) === TRUE) {
-        $success_message = "Reservation successfully made!";
-    } else {
-        $error_message = "Error: " . $conn->error;
+        if ($slot_result->num_rows > 0) {
+            $slot = $slot_result->fetch_assoc();
+            $reservation_date = $slot['Date'] . ' ' . $slot['StartTime'];
+
+            $reservation_sql = "INSERT INTO Reservation (LawyerID, ClientID, ReservationDate, Status) 
+                                VALUES ('$lawyer_id', '$client_id', '$reservation_date', 'Pending')";
+
+            $conn->query($reservation_sql);
+
+            $availability_sql = "UPDATE Availability SET Status = 'Booked' WHERE AvailabilityID = $availability_id";
+            $conn->query($availability_sql);
+        } else {
+            $error_message = "Selected slot is no longer available.";
+        }
     }
 }
+
 
 $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
         FROM Lawyer
@@ -136,30 +146,46 @@ $result = $conn->query($sql);
     <?php endif; ?>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style="align-items: start;">
-        <?php while ($lawyer = $result->fetch_assoc()) : ?>
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
-                <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
-                    <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
-                    <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
-                    <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
-                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> Years of Experience</p>
-                    <!-- <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
-                    <p class="text-lg text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
-                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800"> -->
+    <?php while ($lawyer = $result->fetch_assoc()) : ?>
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+            <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
+                <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
+                <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
+                <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
+                <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> Years of Experience</p>
 
-                    <form method="POST" action="" class="mt-4">
-                        <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
-                        <div class="flex items-center space-x-4">
-                            <input type="datetime-local" name="reservation_date" required class="p-2 border border-gray-300 rounded-md w-full">
-                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Book</button>
-                        </div>
-                    </form>
-                </div>
+                <form method="POST" action="" class="mt-4">
+                    <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
+
+                    <?php
+                    $lawyer_id = $lawyer['LawyerID'];
+                    $availability_query = "SELECT AvailabilityID, Date, StartTime, EndTime 
+                                           FROM Availability 
+                                           WHERE LawyerID = $lawyer_id AND Status = 'Available'";
+                    $availability_result = $conn->query($availability_query);
+                    ?>
+
+                    <?php if ($availability_result->num_rows > 0) : ?>
+                        <label for="available_slots" class="block text-gray-700">Choose an available slot:</label>
+                        <select name="availability_id" required class="p-2 border border-gray-300 rounded-md w-full">
+                            <?php while ($slot = $availability_result->fetch_assoc()) : ?>
+                                <option value="<?php echo $slot['AvailabilityID']; ?>">
+                                    <?php echo date('F j, Y', strtotime($slot['Date'])) . ' - ' . date('h:i A', strtotime($slot['StartTime'])) . ' to ' . date('h:i A', strtotime($slot['EndTime'])); ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mt-4">Book</button>
+                    <?php else : ?>
+                        <p class="text-red-500 mt-4">No available slots for this lawyer.</p>
+                    <?php endif; ?>
+                </form>
             </div>
-        <?php endwhile; ?>
-    </div>
+        </div>
+    <?php endwhile; ?>
+</div>
+
 
 
 

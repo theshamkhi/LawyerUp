@@ -22,6 +22,37 @@ if ($lawyer_result->num_rows > 0) {
     $lawyer = null;
     $error_message = "Lawyer profile not found.";
 }
+
+// Insert Availability
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['date'], $_POST['start_time'], $_POST['end_time'])) {
+    $date = $_POST['date'];
+    $start_time = $_POST['start_time'];
+    $end_time = $_POST['end_time'];
+
+    $insert_sql = "INSERT INTO Availability (LawyerID, Date, StartTime, EndTime, Status) 
+                VALUES (?, ?, ?, ?, 'Available')";
+    $stmt = $conn->prepare($insert_sql);
+    $stmt->bind_param('isss', $lawyer_id, $date, $start_time, $end_time);
+
+    $stmt->execute();
+
+    header("Location: LawyerDashboard.php");
+    exit;
+}
+
+// Delete Availability
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_id'])) {
+    $delete_id = intval($_POST['delete_availability_id']);
+
+    $delete_sql = "DELETE FROM Availability WHERE AvailabilityID = ?";
+    $stmt = $conn->prepare($delete_sql);
+    $stmt->bind_param('i', $delete_id);
+
+    $stmt->execute();
+
+    header("Location: LawyerDashboard.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,8 +71,6 @@ if ($lawyer_result->num_rows > 0) {
 </head>
 <body class="bg-gray-100">
 
-<!-- Navbar -->
-
 
 <!-- Main -->
 
@@ -54,7 +83,6 @@ if ($lawyer_result->num_rows > 0) {
 
 <aside id="default-sidebar" class="fixed top-0 left-0 z-40 w-80 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
    <div class="h-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
-    <!-- Sidebar Menu -->
       <?php if ($lawyer): ?>
         <div class="flex flex-col space-y-2">
             <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="object-cover">
@@ -97,7 +125,54 @@ if ($lawyer_result->num_rows > 0) {
    </div>
 </aside>
 
+
 <div class="p-8 sm:ml-80">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Manage Availability</h2>
+
+    <form method="POST" class="flex items-center justify-center space-x-6">
+        <input type="date" name="date" required class="p-2 text-gray-400 rounded-lg">
+        <label for="date" class="text-gray-700 font-semibold">From</label>
+        <input type="time" name="start_time" required class="p-2 text-gray-400 rounded-lg">
+        <label for="date" class="text-gray-700 font-semibold">To</label>
+        <input type="time" name="end_time" required class="p-2 text-gray-400 rounded-lg">
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg">Add Availability</button>
+    </form>
+
+    <div class="flex items-center justify-center overflow-x-auto bg-white shadow-lg rounded-lg mt-8 mb-16">
+        <?php
+        $availability_sql = "SELECT AvailabilityID, Date, StartTime, EndTime, Status 
+                            FROM Availability 
+                            WHERE LawyerID = $lawyer_id 
+                            ORDER BY Date, StartTime";
+        $availability_result = $conn->query($availability_sql);
+        ?>
+        <table class="min-w-full table-auto border-collapse">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-medium text-white">Date</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium text-white">From</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium text-white">To</th>
+                    <th class="px-6 py-3 text-left text-sm font-medium text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($availability = $availability_result->fetch_assoc()): ?>
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm"><?php echo $availability['Date']; ?></td>
+                        <td class="px-6 py-4 text-sm"><?php echo $availability['StartTime']; ?></td>
+                        <td class="px-6 py-4 text-sm"><?php echo $availability['EndTime']; ?></td>
+                        <td class="px-6 py-4 text-sm">
+                            <form method="POST" class="inline-block">
+                                <input type="hidden" name="delete_availability_id" value="<?php echo $availability['AvailabilityID']; ?>" />
+                                <button type="submit" class="text-xl hover:scale-105">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
     <h2 class="text-2xl font-semibold text-gray-700 mb-6">Reservations</h2>
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
@@ -143,9 +218,9 @@ if ($lawyer_result->num_rows > 0) {
                 <tbody>
                     <?php while ($reservation = $reservation_result->fetch_assoc()) : ?>
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Name']); ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['ReservationDate']); ?></td>
-                            <td class="px-6 py-4 text-sm"><?php echo htmlspecialchars($reservation['Status']); ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Name']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['ReservationDate']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $reservation['Status']; ?></td>
                             <td class="px-6 py-4">
                                 <form method="POST" action="" class="flex space-x-2">
                                     <input type="hidden" name="reservation_id" value="<?php echo $reservation['ReservationID']; ?>">

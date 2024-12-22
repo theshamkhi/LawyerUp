@@ -26,7 +26,7 @@ CREATE TABLE Reservation (
     ClientID INT NOT NULL,
     LawyerID INT NOT NULL,
     ReservationDate DATETIME NOT NULL,
-    Status ENUM('Pending', 'Confirmed', 'Cancelled') NOT NULL,
+    Status ENUM('Pending', 'Confirmed', 'Rejected') NOT NULL,
     FOREIGN KEY (ClientID) REFERENCES User(UserID) ON DELETE CASCADE,
     FOREIGN KEY (LawyerID) REFERENCES Lawyer(LawyerID) ON DELETE CASCADE
 );
@@ -34,11 +34,13 @@ CREATE TABLE Reservation (
 CREATE TABLE Availability (
     AvailabilityID INT AUTO_INCREMENT PRIMARY KEY,
     LawyerID INT NOT NULL,
-    FromTime DATETIME NOT NULL,
-    ToTime DATETIME NOT NULL,
-    Status ENUM('Available', 'Booked', 'Inactive') NOT NULL,
+    Date DATE NOT NULL,
+    StartTime TIME NOT NULL,
+    EndTime TIME NOT NULL,
+    Status ENUM('Available', 'Booked') NOT NULL,
     FOREIGN KEY (LawyerID) REFERENCES Lawyer(LawyerID) ON DELETE CASCADE
 );
+
 
 
 INSERT INTO User (Name, Username, Email, Password, Role) VALUES
