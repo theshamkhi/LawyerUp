@@ -38,6 +38,9 @@ $result = $conn->query($sql);
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <!-- AOS Animation CDN -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -129,8 +132,8 @@ $result = $conn->query($sql);
         }
     ?>
     <?php if ($reservation_result->num_rows > 0) : ?>
-        <div class="flex items-center justify-center overflow-x-auto">
-            <table class="min-w-full table-auto border-collapse bg-white shadow-lg">
+        <div class="flex items-center justify-center overflow-x-auto bg-white shadow-lg rounded-lg" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+            <table class="min-w-full table-auto border-collapse">
                 <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
                         <th class="px-6 py-3 text-left text-sm font-medium text-white">Lawyer</th>
@@ -163,6 +166,9 @@ $result = $conn->query($sql);
 
 
 <!-- Footer -->
+<script>
+  AOS.init();
+</script>
 
 </body>
 </html>

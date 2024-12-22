@@ -7,6 +7,9 @@
     <link rel="icon" href="../assets/media/court.png"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../assets/style.css">
+    <!-- AOS Animation CDN -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body>
 
@@ -44,7 +47,7 @@
 <div class="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-28 mr-auto mb-0 ml-auto max-w-7xl xl:px-5 lg:flex-row">
     <div class="flex flex-col items-center w-full pt-5 pr-10 pb-20 pl-10 lg:pt-20 lg:flex-row">
         <div class="w-full bg-cover relative max-w-md lg:max-w-2xl lg:w-7/12">
-            <div class="flex flex-col items-center justify-center w-full h-full relative lg:pr-10">
+            <div class="flex flex-col items-center justify-center w-full h-full relative lg:pr-10" data-aos="fade-right" data-aos-easing="ease-in-sine" data-aos-duration="800">
                 <h1 class="text-9xl text-white font-bold">
                     Objection! Your Honor
                 </h1>
@@ -82,6 +85,12 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+  AOS.init();
+</script>
 
 </body>
 </html>

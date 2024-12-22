@@ -53,6 +53,9 @@ $result = $conn->query($sql);
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <!-- AOS Animation CDN -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -134,18 +137,17 @@ $result = $conn->query($sql);
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style="align-items: start;">
         <?php while ($lawyer = $result->fetch_assoc()) : ?>
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
                 <img src="<?php echo $lawyer['PhotoURL']; ?>" alt="Lawyer Photo" class="w-full h-48 object-cover">
                 <div class="p-6">
                     <h3 class="text-4xl mb-4 font-semibold text-gray-900"><?php echo $lawyer['Name']; ?></h3>
                     <p class="text-lg text-gray-700">&#127891; <?php echo $lawyer['Specialization']; ?></p>
                     <p class="text-lg text-gray-700">&#128231; <?php echo $lawyer['Email']; ?></p>
                     <p class="text-lg text-gray-700">&#128222; <?php echo $lawyer['PhoneNumber']; ?></p>
-                    <p class="text-lg text-gray-700">&#127775; <?php echo $lawyer['Rating']; ?>/5</p>
-                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> years of experience</p>
-                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
+                    <p class="text-lg text-gray-700">&#128188; <?php echo $lawyer['ExpYears']; ?> Years of Experience</p>
+                    <!-- <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
                     <p class="text-lg text-gray-700">&#10077; <?php echo $lawyer['Bio']; ?> &#10077;</p>
-                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800">
+                    <hr class="my-4 bg-gray-50 border-1 rounded dark:bg-gray-800"> -->
 
                     <form method="POST" action="" class="mt-4">
                         <input type="hidden" name="lawyer_id" value="<?php echo $lawyer['LawyerID']; ?>">
@@ -165,6 +167,9 @@ $result = $conn->query($sql);
 
 
 <!-- Footer -->
+<script>
+  AOS.init();
+</script>
 
 </body>
 </html>

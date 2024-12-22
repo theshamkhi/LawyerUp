@@ -35,15 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_user'])) {
 
         $name = $_POST['name'];
-        $email = $_POST['email'];
+        $photo = $_POST['photo'];
         $specialization = $_POST['specialization'];
         $phone = $_POST['phone'];
         $bio = $_POST['bio'];
 
-        $update_user_sql = "UPDATE User SET Name = '$name', Email = '$email' WHERE UserID = $lawyer_id";
+        $update_user_sql = "UPDATE User SET Name = '$name' WHERE UserID = $lawyer_id";
         $conn->query($update_user_sql);
 
-        $update_lawyer_sql = "UPDATE Lawyer SET Specialization = '$specialization', PhoneNumber = '$phone', Bio = '$bio' 
+        $update_lawyer_sql = "UPDATE Lawyer SET Specialization = '$specialization', PhotoURL = '$photo', PhoneNumber = '$phone', Bio = '$bio' 
                             WHERE LawyerID = $lawyer_id";
         $conn->query($update_lawyer_sql);
 
@@ -63,6 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <!-- AOS Animation CDN -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body class="bg-gray-100">
 
@@ -126,15 +129,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="sm:ml-80">
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
         <div class="w-full my-4 mx-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
-            <div class="pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
+            <div class="pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10" data-aos="fade-right">
                 <form method="POST" class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Name</p>
                         <input type="text" name="name" value="<?= htmlspecialchars($user_data['Name']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
-                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Email</p>
-                        <input type="email" name="email" value="<?= htmlspecialchars($user_data['Email']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
+                        <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">PhotoURL</p>
+                        <input type="text" name="photo" value="<?= htmlspecialchars($user_data['PhotoURL']) ?>" required class="border placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white border-gray-300 rounded-md"/>
                     </div>
                     <div class="relative">
                         <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">Specialization</p>
@@ -161,6 +164,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 <!-- Footer -->
+
+<script>
+  AOS.init();
+</script>
 
 </body>
 </html>
