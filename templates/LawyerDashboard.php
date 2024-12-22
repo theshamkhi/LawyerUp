@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['date'], $_POST['start
 
 // Delete Availability
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_id'])) {
-    $delete_id = intval($_POST['delete_availability_id']);
+    $delete_id = $_POST['delete_availability_id'];
 
     $delete_sql = "DELETE FROM Availability WHERE AvailabilityID = ?";
     $stmt = $conn->prepare($delete_sql);
@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
 
     <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reservation_id'], $_POST['action'])) {
-            $reservation_id = intval($_POST['reservation_id']);
+            $reservation_id = $_POST['reservation_id'];
             $action = $_POST['action'];
 
             if ($action === 'accept') {
@@ -250,7 +250,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_availability_i
         <p class="text-gray-700">You have no upcoming reservations.</p>
     <?php endif; ?>
 </div>
-
 
 
 
