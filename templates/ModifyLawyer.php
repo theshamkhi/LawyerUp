@@ -22,6 +22,35 @@ if ($lawyer_result->num_rows > 0) {
     $lawyer = null;
     $error_message = "Lawyer profile not found.";
 }
+
+$sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, 
+        Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
+        FROM Lawyer
+        JOIN User ON Lawyer.LawyerID = User.UserID
+        WHERE Lawyer.LawyerID = $lawyer_id";
+$result = $conn->query($sql);
+$user_data = $result->fetch_assoc();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['update_user'])) {
+
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $specialization = $_POST['specialization'];
+        $phone = $_POST['phone'];
+        $bio = $_POST['bio'];
+
+        $update_user_sql = "UPDATE User SET Name = '$name', Email = '$email' WHERE UserID = $lawyer_id";
+        $conn->query($update_user_sql);
+
+        $update_lawyer_sql = "UPDATE Lawyer SET Specialization = '$specialization', PhoneNumber = '$phone', Bio = '$bio' 
+                            WHERE LawyerID = $lawyer_id";
+        $conn->query($update_lawyer_sql);
+
+        header("Location: LawyerDashboard.php");
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +90,6 @@ if ($lawyer_result->num_rows > 0) {
                 <p class="text-base text-gray-400">&#128188;  <?php echo $lawyer['ExpYears']; ?> Years of experience</p>
                 <p class="text-base text-gray-400">&#128231;  <?php echo $lawyer['Email']; ?></p>
                 <p class="text-base text-gray-400">&#128222;  <?php echo $lawyer['PhoneNumber']; ?></p>
-                <p class="text-base text-gray-400">&#127775;  <?php echo $lawyer['Rating']; ?>/5</p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
                     <p class="text-base text-gray-300"><?php echo $lawyer['Bio']; ?></p>
                 <hr class="h-1 my-4 bg-gray-200 border-0 rounded dark:bg-gray-700">
@@ -95,34 +123,7 @@ if ($lawyer_result->num_rows > 0) {
    </div>
 </aside>
 
-<div class="p-8 sm:ml-80">
-    <?php
-    $sql = "SELECT User.Name, User.Email, Lawyer.LawyerID, Lawyer.Specialization, Lawyer.PhotoURL, 
-            Lawyer.ExpYears, Lawyer.Bio, Lawyer.Rating, Lawyer.PhoneNumber
-            FROM Lawyer
-            JOIN User ON Lawyer.LawyerID = User.UserID
-            WHERE Lawyer.LawyerID = $lawyer_id";
-    $result = $conn->query($sql);
-    $user_data = $result->fetch_assoc();
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['update_user'])) {
-
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $specialization = $_POST['specialization'];
-            $phone = $_POST['phone'];
-            $bio = $_POST['bio'];
-
-            $update_user_sql = "UPDATE User SET Name = '$name', Email = '$email' WHERE UserID = $lawyer_id";
-            $conn->query($update_user_sql);
-
-            $update_lawyer_sql = "UPDATE Lawyer SET Specialization = '$specialization', PhoneNumber = '$phone', Bio = '$bio' 
-                                WHERE LawyerID = $lawyer_id";
-            $conn->query($update_lawyer_sql);
-        }
-    }
-    ?>
+<div class="sm:ml-80">
     <div class="flex items-center justify-center min-h-screen bg-gray-100">
         <div class="w-full my-4 mx-0 relative z-10 max-w-2xl lg:mt-0 lg:w-5/12">
             <div class="pt-10 pr-10 pb-10 pl-10 bg-white shadow-2xl rounded-xl relative z-10">
