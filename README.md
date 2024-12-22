@@ -7,10 +7,11 @@ This project aims to develop an intuitive website for a specialized law firm, en
 - **Clients**: To browse lawyer profiles, book consultations, and manage their reservations.
 - **Lawyers**: To manage their availability, reservations, and professional profiles.
 
+---
 
 ![image](https://github.com/user-attachments/assets/4215c4ed-48bb-4ac3-8354-0d68d4c2f859)
 
-![image](https://github.com/user-attachments/assets/17662e3a-0775-4966-975f-8bcb4e69185b)
+![image](https://github.com/user-attachments/assets/bbbe2003-6218-45d3-b431-82a8a43c6fa4)
 
 ---
 
